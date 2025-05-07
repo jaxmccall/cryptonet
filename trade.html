@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoNet - Live Trading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        :root {
+            --primary: #0096FF;
+            --secondary: #00BFFF;
+            --background: #0d1117;
+            --surface: #1f2633;
+            --border: #2b3242;
+            --success: #00ff7f;
+            --danger: #ff4d4d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Header */
+        .trading-header {
+            padding: 1rem 2rem;
+            background: var(--surface);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,150,255,0.3);
+        }
+
+        /* Main Trading Interface */
+        .trading-container {
+            padding: 120px 2rem 100px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Chart Section */
+        .chart-wrapper {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        #tradingview {
+            height: 600px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* Trading Controls */
+        .trading-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .trade-button {
+            padding: 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trade-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent, 
+                rgba(255,255,255,0.1), 
+                transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+
+        .trade-button:hover::after {
+            animation: shine 1.5s;
+        }
+
+        .buy-up {
+            background: linear-gradient(135deg, var(--success), #00cc66);
+            color: var(--background);
+        }
+
+        .buy-down {
+            background: linear-gradient(135deg, var(--danger), #cc0000);
+            color: white;
+        }
+
+        /* Market Data */
+        .market-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .data-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .data-label {
+            color: #bbb;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .data-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        /* Footer Navigation */
+        .footer-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--surface);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-icon {
+            width: 30px;
+            height: 30px;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Animations */
+        @keyframes shine {
+            0% { transform: rotate(45deg) translateX(-150%); }
+            100% { transform: rotate(45deg) translateX(150%); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .trading-container {
+                padding: 100px 1rem 80px;
+            }
+
+            .trading-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-wrapper {
+                padding: 0.5rem;
+            }
+
+            #tradingview {
+                height: 400px;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <!-- Header -->
+    <header class="trading-header">
+        <button class="back-btn" onclick="window.history.back()">
+            ← Back to Dashboard
+        </button>
+        <img src="./images/logo.png" alt="CryptoNet" style="height: 40px;">
+        <div class="balance-display">$25,430.00</div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="trading-container">
+        <!-- Market Data -->
+        <div class="market-data">
+            <div class="data-card">
+                <div class="data-label">BTC/USDT Price</div>
+                <div class="data-value" id="btcPrice">$36,500</div>
+            </div>
+            <div class="data-card">
+                <div class="data-label">24h Change</div>
+                <div class="data-value success">+2.4%</div>
+            </div>
+            <div class="data-card">
+                <div class="data-label">24h Volume</div>
+                <div class="data-value">$1.2B</div>
+            </div>
+        </div>
+
+        <!-- Trading Chart -->
+        <div class="chart-wrapper">
+            <div id="tradingview"></div>
+        </div>
+
+        <!-- Trading Actions -->
+        <div class="trading-actions">
+            <button class="trade-button buy-up" onclick="placeTrade('buy')">
+                BUY UP ▲
+            </button>
+            <button class="trade-button buy-down" onclick="placeTrade('sell')">
+                BUY DOWN ▼
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <nav class="footer-nav">
+        <a href="#" class="nav-item">
+            <img src="./images/trade-icon.png" class="nav-icon" alt="Trade">
+            Trade
+        </a>
+        <a href="#" class="nav-item">
+            <img src="./images/wallet-icon.png" class="nav-icon" alt="Wallet">
+            Wallet
+        </a>
+        <a href="#" class="nav-item">
+            <img src="./images/chart-icon.png" class="nav-icon" alt="Analytics">
+            Stats
+        </a>
+        <a href="#" class="nav-item">
+            <img src="./images/profile-icon.png" class="nav-icon" alt="Profile">
+            Profile
+        </a>
+    </nav>
+
+    <script>
+        // Initialize TradingView
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": "BINANCE:BTCUSDT",
+            "interval": "15",
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#0d1117",
+            "enable_publishing": false,
+            "hide_side_toolbar": false,
+            "container_id": "tradingview"
+        });
+
+        // Initialize Particles
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#0096ff" },
+                shape: { type: "circle" },
+                opacity: { value: 0.3, random: true },
+                size: { value: 3, random: true },
+                move: {
+                    enable: true,
+                    speed: 1.5,
+                    direction: "none",
+                    random: false,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                }
+            }
+        });
+
+        // Trading Functions
+        function placeTrade(direction) {
+            const amount = prompt(`Enter ${direction.toUpperCase()} amount (USD):`);
+            if(amount && !isNaN(amount)) {
+                const confirmation = confirm(`Confirm ${direction.toUpperCase()} order for $${amount}?`);
+                if(confirmation) {
+                    alert(`Order placed: ${direction.toUpperCase()} $${amount}`);
+                }
+            }
+        }
+
+        // Simulate Price Updates
+        function updatePrice() {
+            const priceElement = document.getElementById('btcPrice');
+            let price = 36500;
+            setInterval(() => {
+                price = price + (Math.random() - 0.5) * 200;
+                priceElement.textContent = `$${price.toFixed(2)}`;
+            }, 3000);
+        }
+        updatePrice();
+    </script>
+</body>
+</html>

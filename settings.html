@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoNet - Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #0d1117;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: white;
+    }
+
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    header {
+      width: 100%;
+      padding: 20px 40px;
+      background: #1f2633;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      position: fixed;
+      top: 0;
+      z-index: 20;
+    }
+
+    .menu-toggle {
+      font-size: 26px;
+      cursor: pointer;
+      display: none;
+    }
+
+    #menu {
+      background: #1f2633;
+      padding: 150px 20px 20px 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      z-index: 10;
+    }
+
+    #menu a {
+      color: #bbb;
+      text-decoration: none;
+      font-size: 18px;
+      padding: 12px 20px;
+      border-radius: 10px;
+    }
+
+    #menu a:hover {
+      background: #0096FF;
+      color: white;
+    }
+
+    #menu a.active {
+      background: #0096FF;
+      color: white;
+    }
+
+    .content {
+      margin-top: 120px;
+      width: 90%;
+      max-width: 800px;
+      padding: 20px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .settings-container {
+      background: #1f2633;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 6px 20px rgba(0,150,255,0.5);
+    }
+
+    h1 {
+      color: #0096FF;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .settings-section {
+      margin-bottom: 30px;
+    }
+
+    .settings-section h2 {
+      color: #00BFFF;
+      border-bottom: 1px solid #2b3242;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    .settings-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(43, 50, 66, 0.5);
+    }
+
+    .settings-item:last-child {
+      border-bottom: none;
+    }
+
+    .settings-item .label {
+      font-weight: 600;
+    }
+
+    .settings-item .value {
+      color: #bbb;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #2b3242;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background-color: #0096FF;
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(26px);
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 20px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0096FF, #00BFFF);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #00BFFF, #0096FF);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #2b3242;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #3a4357;
+    }
+
+    .two-factor-box {
+      background: #2b3242;
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .two-factor-box.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .two-factor-qr {
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 20px auto;
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .two-factor-code {
+      font-family: monospace;
+      font-size: 18px;
+      letter-spacing: 2px;
+      background: rgba(0,0,0,0.3);
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: none;
+      background: #2b3242;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Editable fields */
+    .editable-field {
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: #2b3242;
+      border: 1px solid #3a4357;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .editable-field:focus {
+      outline: none;
+      border-color: #0096FF;
+      box-shadow: 0 0 0 2px rgba(0, 150, 255, 0.2);
+    }
+
+    .edit-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* MOBILE ONLY */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+      #menu {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+      #menu.show {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      .settings-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+
+    .footer-nav {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      background: #1f2633;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 20px 0;
+      position: fixed;
+      border-radius: 10px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+      z-index: 5;
+    }
+    
+    .footer-nav a {
+      text-align: center;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .footer-nav img {
+      width: 30px;
+      height: 30px;
+      margin-bottom: 5px;
+    }
+
+    .trade-simple {
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #0096FF, #00BFFF);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,150,255,0.4);
+    }
+    
+    .trade-simple:hover {
+      background: linear-gradient(135deg, #0080FF, #00A5FF);
+      box-shadow: 0 6px 15px rgba(0,150,255,0.6);
+    }
+  </style>
+</head>
+
+<body onclick="closeMenuOutside(event)">
+<div id="particles-js"></div>
+
+<header>
+  <div class="menu-toggle" onclick="toggleMenu(event)">&#9776;</div>
+  <img src="./images/logo.png" alt="CryptoNet Logo" style="height: 80px;">
+  <div></div>
+</header>
+
+<div id="menu">
+  <a href="./dashboard.html">Dashboard</a>
+  <a href="./profile.html">Profile Overview</a>
+  <a href="./activities.html">Recent Activity</a>
+  <a href="./settings.html" class="active">Settings</a>
+  <a href="./pns.html">Privacy & Security</a>
+  <a href="./kyc.html">KYC Verification</a>
+  <a href="./referral.html">Referral Program</a>
+  <a href="./contact.html">Contact Support</a>
+  <a href="./terms.html">Terms & Conditions</a>
+</div>
+
+<div class="content">
+  <div class="settings-container">
+    <h1>Account Settings</h1>
+    
+    <div class="settings-section">
+      <h2>Profile Settings</h2>
+      
+      <div class="settings-item">
+        <div class="label">Username</div>
+        <input type="text" id="usernameField" class="editable-field" value="John">
+      </div>
+      
+      <div class="settings-item">
+        <div class="label">Email Address</div>
+        <input type="email" id="emailField" class="editable-field" value="john@example.com">
+      </div>
+      
+      <div class="settings-item">
+        <div class="label">Phone Number</div>
+        <input type="tel" id="phoneField" class="editable-field" value="+1 (555) 123-4567">
+      </div>
+      
+      <div class="settings-item">
+        <div class="label">Account Created</div>
+        <div class="value">May 15, 2023</div>
+      </div>
+      
+      <div class="edit-buttons">
+        <button class="btn btn-primary" onclick="saveProfileChanges()">
+          Save Changes
+        </button>
+        <button class="btn btn-secondary" onclick="resetProfileChanges()">
+          Reset
+        </button>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <h2>Security Settings</h2>
+      
+      <div class="settings-item">
+        <div class="label">Password</div>
+        <button class="btn btn-secondary" onclick="openChangePassword()">
+          Change Password
+        </button>
+      </div>
+      
+      <div class="settings-item">
+        <div class="label">Two-Factor Authentication</div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="twoFactorToggle" onchange="toggleTwoFactor()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="two-factor-box" id="twoFactorBox">
+        <h3>Set Up Two-Factor Authentication</h3>
+        <p>Scan this QR code with your authenticator app:</p>
+        
+        <div class="two-factor-qr">
+          <div style="text-align: center;">
+            <div style="color: black; font-weight: bold;">CryptoNet 2FA</div>
+            <div style="color: black;">(QR Code would display here)</div>
+          </div>
+        </div>
+        
+        <p>Or enter this code manually:</p>
+        <div class="two-factor-code">JBSWY3DPEHPK3PXP</div>
+        
+        <div class="form-group">
+          <label for="twoFactorCode">Enter 6-digit code to verify</label>
+          <input type="text" id="twoFactorCode" placeholder="123456" maxlength="6">
+        </div>
+        
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="verifyTwoFactor()">Verify</button>
+          <button class="btn btn-secondary" onclick="cancelTwoFactor()">Cancel</button>
+        </div>
+      </div>
+      
+      <div class="settings-item">
+        <div class="label">Login Activity</div>
+        <button class="btn btn-secondary" onclick="viewLoginActivity()">
+          View All Sessions
+        </button>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <h2>Notification Preferences</h2>
+      
+      <div class="settings-item">
+        <div class="label">Email Notifications</div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="emailNotifications" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="settings-item">
+        <div class="label">SMS Notifications</div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="smsNotifications">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="settings-item">
+        <div class="label">Push Notifications</div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="pushNotifications" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      
+      <div class="settings-item">
+        <div class="label">Price Alerts</div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="priceAlerts">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    
+    <div class="settings-section">
+      <h2>Account Actions</h2>
+      
+      <div class="settings-item">
+        <div>
+          <div class="label">Export Account Data</div>
+          <div class="value" style="font-size: 14px;">Download a copy of your personal data</div>
+        </div>
+        <button class="btn btn-secondary" onclick="exportAccountData()">
+          Export Data
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br><br><br><br>
+
+<div class="footer-nav">
+  <a href="#">
+    <button class="trade-simple">Trade</button>
+  </a>
+  <a href="#">
+    <div style="background: #1f2633; width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e74f4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 17l6-6 4 4 8-8" />
+        <circle cx="3" cy="17" r="1.5" fill="#00BFFF"/>
+        <circle cx="9" cy="11" r="1.5" fill="#00BFFF"/>
+        <circle cx="13" cy="15" r="1.5" fill="#00BFFF"/>
+        <circle cx="21" cy="7" r="1.5" fill="#e74f4f"/>
+      </svg>
+    </div>
+  </a>
+  <a href="#" class="trade">
+    <img src="./images/gear.png" alt="Mining Machine">
+  </a>
+  <a href="#">
+    <div style="background: #1f2633; width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0096FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 01-3.46 0"/>
+      </svg>
+    </div>
+  </a>
+</div>
+
+<script>
+  // Initialize user data
+  let userData = {
+    username: "John",
+    email: "john@example.com",
+    phone: "+1 (555) 123-4567",
+    accountCreated: "May 15, 2023"
+  };
+
+  // Initialize original values for reset functionality
+  let originalValues = {...userData};
+
+  particlesJS('particles-js', {
+    particles: {
+      number: { value: 60 },
+      color: { value: '#0096FF' },
+      shape: { type: 'circle' },
+      opacity: { value: 0.3 },
+      size: { value: 3 },
+      move: { enable: true, speed: 1.5 }
+    }
+  });
+
+  function toggleMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('menu');
+    menu.classList.toggle('show');
+  }
+
+  function closeMenuOutside(event) {
+    const menu = document.getElementById('menu');
+    if (!event.target.closest('#menu') && !event.target.closest('.menu-toggle') && window.innerWidth <= 768) {
+      menu.classList.remove('show');
+    }
+  }
+
+  // Profile editing functions
+  function saveProfileChanges() {
+    const newUsername = document.getElementById('usernameField').value;
+    const newEmail = document.getElementById('emailField').value;
+    const newPhone = document.getElementById('phoneField').value;
+
+    // Update user data
+    userData.username = newUsername;
+    userData.email = newEmail;
+    userData.phone = newPhone;
+
+    // Update dashboard in real-time
+    if (typeof updateDashboardProfile === 'function') {
+      updateDashboardProfile(userData);
+    }
+
+    // Save to localStorage (simulating backend save)
+    localStorage.setItem('userProfile', JSON.stringify(userData));
+
+    alert('Profile changes saved successfully!');
+  }
+
+  function resetProfileChanges() {
+    document.getElementById('usernameField').value = originalValues.username;
+    document.getElementById('emailField').value = originalValues.email;
+    document.getElementById('phoneField').value = originalValues.phone;
+  }
+
+  // Security settings functions
+  function toggleTwoFactor() {
+    const toggle = document.getElementById('twoFactorToggle');
+    const twoFactorBox = document.getElementById('twoFactorBox');
+    
+    if (toggle.checked) {
+      twoFactorBox.classList.add('active');
+    } else {
+      twoFactorBox.classList.remove('active');
+    }
+  }
+
+  function verifyTwoFactor() {
+    const code = document.getElementById('twoFactorCode').value;
+    if (code.length === 6) {
+      alert('Two-factor authentication has been successfully enabled!');
+      document.getElementById('twoFactorBox').classList.remove('active');
+    } else {
+      alert('Please enter a valid 6-digit code');
+    }
+  }
+
+  function cancelTwoFactor() {
+    document.getElementById('twoFactorToggle').checked = false;
+    document.getElementById('twoFactorBox').classList.remove('active');
+  }
+
+  function openChangePassword() {
+    alert('Change password modal would open here');
+  }
+
+  function viewLoginActivity() {
+    alert('Login activity modal would open here');
+  }
+
+  function exportAccountData() {
+    alert('Preparing your account data for download...');
+    setTimeout(() => {
+      alert('Your account data has been exported successfully!');
+    }, 1500);
+  }
+
+  // Load saved data on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    // Load notification preferences
+    document.getElementById('emailNotifications').checked = true;
+    document.getElementById('pushNotifications').checked = true;
+    document.getElementById('smsNotifications').checked = false;
+    document.getElementById('priceAlerts').checked = false;
+
+    // Load saved profile data if available
+    const savedProfile = localStorage.getItem('userProfile');
+    if (savedProfile) {
+      userData = JSON.parse(savedProfile);
+      document.getElementById('usernameField').value = userData.username;
+      document.getElementById('emailField').value = userData.email;
+      document.getElementById('phoneField').value = userData.phone;
+    }
+  });
+
+  // Function to update dashboard profile (would be called by dashboard page)
+  function updateDashboardProfile(data) {
+    // This would update the dashboard in real-time
+    if (window.parent && window.parent.document) {
+      const dashboardUsername = window.parent.document.getElementById('username');
+      if (dashboardUsername) {
+        dashboardUsername.innerText = data.username;
+      }
+    }
+  }
+</script>
+</body>
+</html>
